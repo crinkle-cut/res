@@ -1,0 +1,71 @@
+plugins {
+    id 'fabric-loom' version '1.7.2'
+    id 'babric-loom-extension' version '1.7.4'
+    id 'maven-publish'
+}
+
+sourceCompatibility = targetCompatibility = JavaVersion.VERSION_17
+
+base {
+    archivesName = project.archives_base_name
+}
+version = project.mod_version
+group = project.maven_group
+
+loom {
+    mixin {
+        defaultRefmapName = "${project.archives_base_name}.refmap.json"
+    }
+}
+
+repositories {
+    maven { url = 'https://maven.glass-launcher.net/babric' }
+    maven { url = 'https://jitpack.io' }
+    maven { url = 'https://github.com/FreeCliff/maven/raw/master' }
+    maven { url = 'https://maven.meteordev.org/releases' }
+    mavenCentral()
+}
+
+dependencies {
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+    mappings "org.wksh:mcp:${project.mcp_mappings}"
+    modImplementation "babric:fabric-loader:${project.loader_version}"
+
+    implementation 'blue.endless:jankson:1.2.1'
+    implementation 'org.apache.logging.log4j:log4j-slf4j18-impl:2.17.2'
+    implementation 'org.slf4j:slf4j-api:1.8.0-beta4'
+
+    include implementation('com.google.guava:guava:33.2.1-jre')
+    include implementation('org.apache.commons:commons-lang3:3.12.0')
+    include implementation('com.google.code.gson:gson:2.8.9')
+    include implementation('javax.vecmath:vecmath:1.5.2')
+    include implementation('commons-io:commons-io:2.14.0')
+}
+
+tasks.withType(JavaCompile).configureEach { it.options.release = 17 }
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+java {
+    withSourcesJar()
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.archivesBaseName}" }
+    }
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}

@@ -1,0 +1,15 @@
+{
+    "schemaVersion": 1,
+    "id": "res",
+    "version": "1.0.0",
+    "name": "Res",
+    "description": "Standalone Resource Mod (HD Textures)",
+    "authors": [],
+    "contact": {},
+    "license": "MIT",
+    "environment": "client",
+    "entrypoints": {},
+    "mixins": [
+        "hdtextures.mixins.json"
+    ]
+}
