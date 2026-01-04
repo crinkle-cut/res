@@ -23,15 +23,28 @@ public class CustomAnimation extends TextureFX {
         String imageName = (tileImage == 0 ? "/terrain.png" : "/gui/items.png");
         try {
             BufferedImage bi = HDTextureUtils.getResource(imageName);
+            int baseRes = 16;
             if (bi != null) {
-                ((ITextureFX) this).setTextureRes(bi.getWidth() / 16);
+                baseRes = bi.getWidth() / 16;
             }
+            ((ITextureFX) this).setTextureRes(baseRes);
 
             String customSrc = "/custom_" + name + ".png";
-            custom = HDTextureUtils.getRescaledResource(customSrc, ((ITextureFX) this).getTextureRes());
+            custom = HDTextureUtils.getResource(customSrc);
             if (custom != null) {
+                if (custom.getWidth() == baseRes && tileSize > 1) {
+                    custom = HDTextureUtils.repeat(custom, tileSize);
+                } else if (custom.getWidth() != baseRes * tileSize) {
+                    custom = HDTextureUtils.rescale(custom, baseRes * tileSize);
+                }
                 ((ITextureFX) this).setTextureRes(custom.getWidth());
                 imageName = customSrc;
+                if (this.tileSize > 1) {
+                    this.tileSize = 1;
+                }
+            } else if (this.tileSize > 1) {
+                ((ITextureFX) this).setTextureRes(baseRes * this.tileSize);
+                this.tileSize = 1;
             }
         } catch (IOException ex) {
             ex.printStackTrace();
@@ -100,8 +113,9 @@ public class CustomAnimation extends TextureFX {
                 return;
             }
 
-            int tileX = (iconIndex % 16) * res;
-            int tileY = (iconIndex / 16) * res;
+            int resInImage = tiles.getWidth() / 16;
+            int tileX = (iconIndex % 16) * resInImage;
+            int tileY = (iconIndex / 16) * resInImage;
             int[] imageBuf = new int[res * res];
             tiles.getRGB(tileX, tileY, res, res, imageBuf, 0, res);
             ARGBtoRGBA(imageBuf, imageData);

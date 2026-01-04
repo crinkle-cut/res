@@ -63,8 +63,9 @@ public class HDTextureUtils {
 
     public static void registerCustomAnimations(net.minecraft.src.RenderEngine renderEngine) {
         initTextures();
-        java.util.List textureList = ((me.ht9.hdtextures.mixin.accessor.RenderEngineAccessor) renderEngine).getTextureList();
-        
+        java.util.List textureList = ((me.ht9.hdtextures.mixin.accessor.RenderEngineAccessor) renderEngine)
+                .getTextureList();
+
         if (textureList != null) {
             textureList.removeIf(o -> o instanceof net.minecraft.src.TextureWaterFX ||
                     o instanceof net.minecraft.src.TextureWaterFlowFX ||
@@ -75,13 +76,36 @@ public class HDTextureUtils {
                     o instanceof CustomAnimation);
         }
 
-        renderEngine.registerTextureFX(new CustomAnimation(net.minecraft.src.Block.waterMoving.blockIndexInTexture - 1, 0, 1, "water_still", -1, -1));
-        renderEngine.registerTextureFX(new CustomAnimation(net.minecraft.src.Block.waterMoving.blockIndexInTexture, 0, 1, "water_flowing", 0, 0));
-        renderEngine.registerTextureFX(new CustomAnimation(net.minecraft.src.Block.lavaMoving.blockIndexInTexture - 1, 0, 1, "lava_still", -1, -1));
-        renderEngine.registerTextureFX(new CustomAnimation(net.minecraft.src.Block.lavaMoving.blockIndexInTexture, 0, 1, "lava_flowing", 3, 6));
-        renderEngine.registerTextureFX(new CustomAnimation(net.minecraft.src.Block.portal.blockIndexInTexture, 0, 1, "portal", -1, -1));
-        renderEngine.registerTextureFX(new CustomAnimation(net.minecraft.src.Block.fire.blockIndexInTexture, 0, 1, "fire_e_w", 2, 4));
-        renderEngine.registerTextureFX(new CustomAnimation(net.minecraft.src.Block.fire.blockIndexInTexture + 16, 0, 1, "fire_n_s", 2, 4));
+        renderEngine
+                .registerTextureFX(new CustomAnimation(net.minecraft.src.Block.waterMoving.blockIndexInTexture + 1, 0,
+                        2, "water_flowing", 0, 0));
+        renderEngine.registerTextureFX(new CustomAnimation(net.minecraft.src.Block.waterMoving.blockIndexInTexture, 0,
+                1, "water_still", -1, -1));
+        renderEngine
+                .registerTextureFX(new CustomAnimation(net.minecraft.src.Block.lavaMoving.blockIndexInTexture + 1, 0,
+                        2, "lava_flowing", 3, 6));
+        renderEngine.registerTextureFX(new CustomAnimation(net.minecraft.src.Block.lavaMoving.blockIndexInTexture, 0, 1,
+                "lava_still", -1, -1));
+        renderEngine.registerTextureFX(
+                new CustomAnimation(net.minecraft.src.Block.portal.blockIndexInTexture, 0, 2, "portal", -1, -1));
+        renderEngine.registerTextureFX(
+                new CustomAnimation(net.minecraft.src.Block.fire.blockIndexInTexture, 0, 1, "fire_e_w", 2, 4));
+        renderEngine.registerTextureFX(
+                new CustomAnimation(net.minecraft.src.Block.fire.blockIndexInTexture + 16, 0, 1, "fire_n_s", 2, 4));
+    }
+
+    public static BufferedImage repeat(BufferedImage img, int count) {
+        int w = img.getWidth();
+        int h = img.getHeight();
+        BufferedImage newImage = new BufferedImage(w * count, h * count, BufferedImage.TYPE_INT_ARGB);
+        Graphics2D g = newImage.createGraphics();
+        for (int x = 0; x < count; x++) {
+            for (int y = 0; y < count; y++) {
+                g.drawImage(img, x * w, y * h, (ImageObserver) null);
+            }
+        }
+        g.dispose();
+        return newImage;
     }
 
     public static BufferedImage rescale(BufferedImage img, int width) {
